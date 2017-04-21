@@ -41,6 +41,15 @@ class Cozmo_Actions:
         robot.start_freeplay_behaviors()
     def stopcompositeAction(self,robot: cozmo.robot.Robot):
         robot.stop_freeplay_behaviors()
+    def setSpeed(self,speed):
+        self.speed = speed
+    def setAngle(self,angle):
+        self.angle = angle
+    def setDistance(self,distance):
+        self.distance = distance
+    def setHeight(self,height):
+        self.height = height
+
 
 # testing commands
 c = Cozmo_Actions(100,100,130,0.0)
