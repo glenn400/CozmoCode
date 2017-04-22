@@ -18,10 +18,19 @@ class CozmoTasks:
         self.angle1 = beta
         # action queue
         self.actionsList = Cozmo_Actions(0, 0, 0, 0.0)
+        self.actionque = [] * 20
 class CollectPinTask(CozmoTasks):
-    def __init__(self,alpha,beta,locationx,locationy,locationz):
+    def __init__(self,alpha,beta,angle,dfo,angle1):
         # this will be used for Cozmo to go to a Downed Pin
-        CozmoTasks.__init__(self,alpha,beta)
-        self.location = [locationx, locationy, locationz]
+        super().__init__(self,alpha,beta)
+        # angle that it fell at
+        # distance from the origin
+        # angle from which cozmo should approach the downed pin
+        self.locationofDPin = [angle, dfo, angle1]
+
     def gotoPin(self):
         # cozmo will go to the pin that is marked as Down
+        # If cozmo angle != pin location angle
+        # rotate to that angle
+        if ():
+            #

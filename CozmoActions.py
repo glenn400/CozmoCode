@@ -1,4 +1,5 @@
 import cozmo
+import asyncio
 from cozmo.util import distance_mm, speed_mmps
 from cozmo.util import degrees
 
@@ -35,7 +36,8 @@ class Cozmo_Actions:
         # lift action
         self._lift(self.height,robot)
     def _lift(self,height,robot):
-        robot.set_lift_height(height=height, accel=10.0, max_speed=10.0, duration=0.0, in_parallel=False, num_retries=3)
+        robot.set_lift_height(height=height, accel=10.0, max_speed=10.0, duration=0.0, in_parallel=False, num_retries=3).wait_for_completed()
+
 
     def compositeAction(self,robot: cozmo.robot.Robot):
         robot.start_freeplay_behaviors()
@@ -52,8 +54,12 @@ class Cozmo_Actions:
 
 
 # testing commands
-c = Cozmo_Actions(100,100,130,0.0)
+c = Cozmo_Actions(100,100,130,1.0)
 #cozmo.run_program(c.moveAction)
 #cozmo.run_program(c.turnAction)
 #cozmo.run_program(c.liftAction)
+c.setHeight(1.0)
+cozmo.run_program(c.liftAction)
+c.setHeight(0.0)
+cozmo.run_program(c.liftAction)
 cozmo.run_program(c.compositeAction)
