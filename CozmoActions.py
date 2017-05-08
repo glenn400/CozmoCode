@@ -13,6 +13,7 @@ class Cozmo_Actions:
         self.distance = d
         self.angle = ang
         self.height = h
+        #self.chargerloc = chargerloc
     def _movebackward(self, distance, speed, robot):
         # travel backward
         robot.drive_straight(distance_mm(distance), speed_mmps(speed)).wait_for_completed()
@@ -22,23 +23,32 @@ class Cozmo_Actions:
     def _rotate(self, angle, robot):
         # cozmo will rotate at some angle
         robot.turn_in_place(degrees(-angle)).wait_for_completed()
-    def moveAction(self,robot: cozmo.robot.Robot):
-
+    def moveAction(self):
         # cozmo moves a distance forward or backward
+        robot: cozmo.robot.Robot
         if self.distance < 0:
             self._movebackward(self.distance, self.speed, robot)
         else:
             self._moveforward(self.distance, self.speed, robot)
-    def turnAction(self, robot: cozmo.robot.Robot):
+    def turnAction(self):
         # Cozmo turns right or left
+        robot: cozmo.robot.Robot
         self._rotate(self.angle, robot)
-    def liftAction(self,robot: cozmo.robot.Robot):
+    def liftAction(self):
+        robot: cozmo.robot.Robot
         # lift action
         self._lift(self.height,robot)
     def _lift(self,height,robot):
         robot.set_lift_height(height=height, accel=10.0, max_speed=10.0, duration=0.0, in_parallel=False, num_retries=3).wait_for_completed()
-
-
+    def _charge(self,robot):
+        # once you see get to location turn around 180 degrees
+        self.setAngle(180)
+        self.turnAction()
+        # now back up on to charger
+        robot.backup_onto_charger(max_drive_time=5)
+    def chargeCozmo(self):
+        robot: cozmo.robot.Robot
+        self._charge(robot)
     def compositeAction(self,robot: cozmo.robot.Robot):
         robot.start_freeplay_behaviors()
     def stopcompositeAction(self,robot: cozmo.robot.Robot):
