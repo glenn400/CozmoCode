@@ -37,40 +37,60 @@ class CollectPinTask(CozmoTasks):
         # will populate location based on image processing
 
     def retrievePin(self):
-        # cozmo will go to the pin that is marked as Down
-        if (CozmoLocation.angle == self.angle):
-            # set distance for comzo to travel to downed pin if the pin is down
-            for i in len(self.penob.dpl):
-                # if this pin is down create list of actions
-                if (self.penob.dpl[i].down == 1):
-                    # calculate polar coordinates of downed pin
-                    # calculate where pin is using coordinates
-                    xlocationPin = math.degrees(math.cos(self.penob.dpl[i].angle)) * self.penob.dpl[i].distance
-                    ylocationPin = math.degrees(math.sin(self.penob.dpl[i].angle)) * self.penob.dpl[i].distance
-                    # pass value into cozmo distance
-                    self.actionque[0] = Cozmo_Actions.setDistance()
-                    # set angle
-                    self.actionque[1] = Cozmo_Actions.setAngle(self.angle)
-                    # cozmo then turns to angle
-                    self.actionque[2] = Cozmo_Actions.turnAction()
-                    # go to the pin location
-                    self.actionque[3] = Cozmo_Actions.moveAction()
-                    # turn to the final angle to see pin
-                    self.actionque[4] = Cozmo_Actions.setAngle(self.angle1)
-                    # then pick up pin
-                    # now take it to pin depot ?
+        # this action will be used after cozmo circles around to near fallen pin
+        # get those values from pendulum object which has the down pin info
+        # how do I identify fallen pin in the Que ?
+        for i in self.penob.dpl:
+            if self.penob.dpl[i].down == 1:
+                # add angle vector to pin vector to acquire resulant vector in polar form
+                phi = self.penob.dpl[i].angle
+                d1 = self.penob.dpl[i].distance
+
+                psi = self.penob.dpl[i].headAngle
+                # d2 should equal the displacement or length of pin probrally which i will call 4 cm
+                d2 = 4
+
+                # r1x = cos(phi) (degrees) * distance r1y = sin(phi)*distance
+                r1x = (math.cos(phi)) * d1
+                r1y = (math.sin(phi)) * d1
+
+                # r2x = cos(phi) (degrees) * distance r2y = sin(phi)*distance
+                r2x = (math.cos(psi)) * d2
+                r2y = (math.sin(psi)) * d2
+
+                # now add them together
+                r3x = r2x + r1x
+                r3y = r2y + r1y
+
+                # take the magnitude  & get the angle
+                # resultant angle in alpha
+                alpha = math.atan2(r3y,r3x)
+                r4x = r3x * r3x
+                r4y = r3y * r3y
+                rr = r4x + r4y
+                # resaultant distance
+                rr1 = math.sqrt(rr)
+
+                angle = alpha - 90.0
+                # cozmo should walk up and get as close as possible
+                # cozmo should rotate 90 or 180 degree so that he is facing the pin
+                self.actionque[0] = Cozmo_Actions.setAngle(angle)
+                # turn cozmo
+                self.actionque[1] = Cozmo_Actions.turnAction()
+                # then move him to the pin
+
 
 
 class PlacePinTASK(CozmoTasks):
     # retrieve a spare pin and place it at a PinLocation
     def __init__(self, alpha, beta, actions):
-        super().__init__(self, alpha, beta, actions)
+        super().__init__(alpha=0,beta=0,actions=None)
         # this will be used to place the pin
 
 
 class ChargeTask(CozmoTasks):
     def __init__(self):
-        super(ChargeTask, self).__init__(self, alpha, beta, actions)
+        super().__init__(alpha=0, beta=0, actions=None)
         # for testin purposes those are polar location of charger near outlet
         self.chargerLocationAngle = 90
         self.chargerLocationDistance = 50
@@ -84,3 +104,21 @@ class ChargeTask(CozmoTasks):
         self.actionque[2] = Cozmo_Actions.setDistance()
         # once he sees charger turn around, Cozmo has 5 seconds to back into charger , should check to see if he is charging or if hes on charger
         self.actionque[3] = Cozmo_Actions.chargeCozmo()
+
+
+class GetToPin(CozmoTasks):
+    def __init__(self):
+        super().__init__(alpha=0,beta=0,actions=None)
+        # instatiate que for actions
+        self.actionque = []
+    def gotoPin(self):
+        # set turn in degrees
+        self.actionque[0] = Cozmo_Actions.setAngle(self.angle)
+        # start from given start angle to get to pin
+        self.actionque[1] = Cozmo_Actions.turnAction()
+        # once cozmo is turned he should go to pin location
+        self.actionque[2] = Cozmo_Actions.circleAction()
+
+
+
+
