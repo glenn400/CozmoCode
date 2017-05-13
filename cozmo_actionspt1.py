@@ -36,6 +36,46 @@ def cozmo_program(robot: cozmo.robot.Robot):
                     self.actionque[4] = Cozmo_Actions.setAngle(self.angle1)
                     # then pick up pin
                     # now take it to pin depot ?
+
+                            for i in self.penob.dpl:
+            if self.penob.dpl[i].down == 1:
+                # add angle vector to pin vector to acquire resulant vector in polar form
+                phi = self.penob.dpl[i].angle
+                d1 = self.penob.dpl[i].distance
+
+                psi = self.penob.dpl[i].headAngle
+                # d2 should equal the displacement or length of pin probrally which i will call 4 cm
+                d2 = 4
+
+                # r1x = cos(phi) (degrees) * distance r1y = sin(phi)*distance
+                r1x = (math.cos(phi)) * d1
+                r1y = (math.sin(phi)) * d1
+
+                # r2x = cos(phi) (degrees) * distance r2y = sin(phi)*distance
+                r2x = (math.cos(psi)) * d2
+                r2y = (math.sin(psi)) * d2
+
+                # now add them together
+                r3x = r2x + r1x
+                r3y = r2y + r1y
+
+                # take the magnitude  & get the angle
+                # resultant angle in alpha
+                alpha = math.atan2(r3y,r3x)
+                r4x = r3x * r3x
+                r4y = r3y * r3y
+                rr = r4x + r4y
+                # resultant distance
+                rr1 = math.sqrt(rr)
+
+                angle = alpha - 90.0
+
+                # cozmo should walk up and get as close as possible
+                # cozmo should rotate 90 or 180 degree so that he is facing the pin
+                self.actionque[0] = Cozmo_Actions.setAngle(angle)
+                # turn cozmo
+                self.actionque[1] = Cozmo_Actions.turnAction()
+                # then move him to the pin
 '''
 
 cozmo.run_program(cozmo_program)
