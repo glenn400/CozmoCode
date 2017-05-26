@@ -30,21 +30,21 @@ class Cozmo_Actions:
     def _circle(self,robot):
         robot.drive_wheels(l_wheel_speed=80.0, r_wheel_speed=100.0, l_wheel_acc=None, r_wheel_acc=None, duration=14.8)
 
-    def moveAction(self):
+    def moveAction(self, robot: cozmo.robot.Robot):
         # cozmo moves a distance forward or backward
-        robot: cozmo.robot.Robot
+
         if self.distance < 0:
             self._movebackward(self.distance, self.speed, robot)
         else:
             self._moveforward(self.distance, self.speed, robot)
 
-    def turnAction(self):
+    def turnAction(self, robot: cozmo.robot.Robot):
         # Cozmo turns right or left
-        robot: cozmo.robot.Robot
+
         self._rotate(self.angle, robot)
 
-    def liftAction(self):
-        robot: cozmo.robot.Robot
+    def liftAction(self, robot: cozmo.robot.Robot):
+
         # lift action
         self._lift(self.height,robot)
 
@@ -58,12 +58,12 @@ class Cozmo_Actions:
         # now back up on to charger
         robot.backup_onto_charger(max_drive_time=5)
 
-    def circleAction(self):
-        robot:cozmo.robot.Robot
+    def circleAction(self, robot: cozmo.robot.Robot):
+
         self._circle(robot)
 
-    def chargeCozmo(self):
-        robot: cozmo.robot.Robot
+    def chargeCozmo(self, robot: cozmo.robot.Robot):
+
         self._charge(robot)
 
     def compositeAction(self,robot: cozmo.robot.Robot):
@@ -86,12 +86,13 @@ class Cozmo_Actions:
 
 
 # testing commands
-c = Cozmo_Actions(100,100,130,1.0)
+# c = Cozmo_Actions(100,100,130,0)
 #cozmo.run_program(c.moveAction)
 #cozmo.run_program(c.turnAction)
+#cozmo.run_program(c.circleAction)
 #cozmo.run_program(c.liftAction)
-c.setHeight(1.0)
-cozmo.run_program(c.liftAction)
-c.setHeight(0.0)
-cozmo.run_program(c.liftAction)
-cozmo.run_program(c.compositeAction)
+# c.setHeight(1.0)
+# cozmo.run_program(c.liftAction)
+# c.setHeight(0.0)
+# cozmo.run_program(c.liftAction)
+#cozmo.run_program(c.compositeAction)
